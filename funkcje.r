@@ -27,7 +27,7 @@ plotRGB(gdansk, r = 5, g = 4, b = 3, scale = 2^16)
 dev.off()
 
 
-reflGdansk = (gdansk / 0.00002) - 0.1
+reflGdansk = (gdansk * 0.00002) + (-0.1)
 png("gdansk refl.png")
 plot(reflGdansk)
 dev.off()
@@ -35,13 +35,13 @@ dev.off()
 test = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 cv = getCV(test)
 print(cv)
-с = calc(reflGdansk, getCV)
-plot(c)
+
+getCVReflGdansk = calc(reflGdansk, getCV)
+png("gdansk getCV refl.png")
+plot(getCVReflGdansk)
+dev.off()
 
 newReflGdansk = coordinates(punktyTest) = ~lon + lat
-print(newReflGdansk)
-print(punktyTest)
-
 proj4string(punktyTest) = CRS("+init=epsg:4326")
 
 punktyUTM = spTransform(punktyTest, proj4string(punktyTest))
@@ -55,17 +55,25 @@ png("gdansk extractVal.png")
 plot(extractVal)
 dev.off()
 
+extractValpunktyTest = extract(reflGdansk, punktyTest)
+print(extractValpunktyTest)
+png("gdansk extractValpunktyTest.png")
+plot(extractValpunktyTest)
+dev.off()
+
 getMask = function(reflRaster, prog = .1)
 {
   # wyświetlanie rastra reflRaster z reflektancją funkcją plotRGB()
-  png("getMask_rgb.png")
-  plotRGB(reflRaster, r = 4, g = 3, b = 2)
-  dev.off()
+  #png("getMask_rgb.png")
+  # plot(reflRaster)
+  #dev.off()
   # (już zaimplementowane)
-  # coord = data.frame(do.call("cbind", locator(1)))
   x = 348314
   y = 6031570
+  # pos <- locator(1)
+  # coord = data.frame(x = pos$x, y = pos$y)
   coord = data.frame(x = x, y = y)
+  # coord = data.frame(do.call("cbind", locator(1)))
   # nadanie odpowiedniego układu współrzędnych obiektowi coord
   # UWAGA nazwy kolumn w obiekcie coord to "x" i "y" a nie "lon" i "lat"
   # jak było w przypadku punktyTest
@@ -98,7 +106,7 @@ getMask = function(reflRaster, prog = .1)
   }
 
   wzor = extract(reflRaster, punktyUTM)
-  print(wzor)
+  # print(wzor)
   wynikSAM = calc(reflRaster, fun = sam)
   #tu zacznij calc:
   wynikMask = wynikSAM < prog
